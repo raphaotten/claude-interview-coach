@@ -27,7 +27,7 @@ If no job posting is provided, the review runs structural/language checks only (
 ### Step 1: Load Context
 
 1. Read the CV file from `output/<filename>` (prepend `output/` to the filename from `$ARGUMENTS`). **Validate it is an actual CV/resume** — not a cheat sheet, coaching notes, or other internal document. If the file contains tactical call notes, scripted answers, rate negotiation scripts, or headers indicating call preparation rather than CV content (e.g., "Cheat Sheet", "Answers for the Call" — in any language), **STOP and ask the user for the actual CV file**.
-2. If a job ad was provided as a URL, fetch it using WebFetch to extract the posting text. If it's a file path, read it. Parse to extract the **top 10 keywords** (technologies, product names, certifications, domain terms) that the CV must contain.
+2. If a job ad was provided as a URL, fetch it using WebFetch to extract the posting text. If it's a file path, read it. **If WebFetch returns fewer than 500 characters or only JavaScript boilerplate** (`noscript`, "enable JavaScript"), the portal is JS-rendered — fall back to Playwright MCP if configured (see `framework/playwright-setup.md`), or ask the user to paste the job posting text directly. Parse to extract the **top 10 keywords** (technologies, product names, certifications, domain terms) that the CV must contain.
 3. Read `data/certifications.md` to check certification status.
 
 ### Step 2: Keyword Match (requires job posting)

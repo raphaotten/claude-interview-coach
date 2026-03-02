@@ -25,7 +25,7 @@ Extract the CV path and job ad URL from `$ARGUMENTS`. If only one argument is pr
 ### Step 2: Load Sources
 
 1. Read the CV file.
-2. Fetch the job ad from the URL using WebFetch.
+2. Fetch the job ad from the URL using WebFetch. **If WebFetch returns fewer than 500 characters or only JavaScript boilerplate** (`noscript`, "enable JavaScript"), the portal is JS-rendered — fall back to Playwright MCP if configured (see `framework/playwright-setup.md`), or ask the user to paste the job posting text directly.
 3. Auto-detect a deep review file: take the CV filename, append `-DEEP-REVIEW` before the extension.
    - Example: CV `output/20260210-target-role-slug.md` → look for `output/20260210-target-role-slug-DEEP-REVIEW.md`
    - If the file exists, read it. If not, skip — the question pool will rely on gap analysis only.

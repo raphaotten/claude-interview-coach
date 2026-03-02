@@ -88,6 +88,13 @@ Extract ALL project/job listings from this page as a structured list. For each l
 Number each listing. Extract every single one on the page.
 ```
 
+**Playwright Fallback** — If the WebFetch response is under 500 characters, or contains only JavaScript boilerplate (`noscript`, "enable JavaScript", "JavaScript is required"), the portal is JS-rendered and WebFetch cannot read it. In that case:
+
+1. **If Playwright MCP is configured** (see `framework/playwright-setup.md`): use the Playwright browser tools to navigate to the URL, wait for the page to finish rendering, then take a snapshot and extract the listings from the rendered content. Note "(via Playwright)" in the scan output header.
+2. **If Playwright MCP is not configured**: inform the user that this portal requires a real browser, point them to `framework/playwright-setup.md` for setup instructions, and offer these alternatives:
+   - Provide a direct search URL with results already visible
+   - Paste the job listing text directly
+
 If the portal's structure is too complex to parse or requires authentication, inform the user and suggest they provide a direct search URL with results visible.
 
 ### Step 4: Deduplicate Against Cache
@@ -106,6 +113,8 @@ For each new (non-cached) ad, fetch its detail page to read the **actual listing
 ```
 Extract the COMPLETE listing text in the original language. Include every section: description, tasks/responsibilities, requirements/qualifications, nice-to-haves, location/remote details, and any other content. Do not summarize — reproduce the full text. Also extract: contract type, start date, duration, rate if shown, and language requirements.
 ```
+
+Apply the same **Playwright Fallback** as Step 3 if any detail page returns a JS shell. If Playwright is not configured and the detail page is unreadable, assess fit from the search result summary only and note the limitation.
 
 If a detail URL was not extracted from the search results, skip that ad's detail fetch — assess it from search results only (note this limitation in the assessment).
 
