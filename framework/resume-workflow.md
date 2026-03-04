@@ -2,11 +2,13 @@
 
 When asked to create a targeted resume for a specific role:
 
+0. **Voice capture opt-in** — ask the candidate the opt-in question from `framework/voice-capture.md` before doing anything else. If they say yes, observe throughout and update `data/voice.md` at the end per that guide. If no, skip all voice capture steps.
+
 1. **Analyse the role** — extract key requirements, technologies, seniority level, industry, and market context (e.g. regional freelancer portals, international job boards, direct application)
    - **Plugins:** Check `data/plugin-activation.md` for activation config (if the file is missing, all plugins are active). Scan `plugins/*/plugin.md` for enabled plugins whose scope includes `cv` and whose activation criteria match the target role/industry. If found, load their CV rules alongside core quality standards. Plugin CV rules are additive -- they cannot disable core quality checks. If `plugins/` is empty or missing, skip this step.
 2. **Scan the project index** — read `data/project-index.md` to identify which projects are relevant based on technologies, tags, industry, and role type
 3. **Read relevant project details** — read the full project files only for the 3-6 most relevant matches. If any project is marked type: `flagship`, consider including it for depth and longevity — but only if it's relevant to the target role. Also read `data/skills.md` and `data/certifications.md`
-4. **Consult professional identity** — read `data/professional-identity.md` for narrative framing, reframes, and values. Use this to inform tone and angle — especially the narrative patterns table (how the candidate defaults vs. how they should frame things)
+4. **Consult professional identity** — read `data/professional-identity.md` for narrative framing, reframes, and values. Use this to inform tone and angle — especially the narrative patterns table (how the candidate defaults vs. how they should frame things). Also read `data/voice.md` if non-empty — apply writing preferences, characteristic phrases, and avoidance list when drafting bullets and summaries. Voice profile takes precedence over Claude's default phrasing patterns.
 5. **Tailor the summary** — rewrite the professional summary to speak directly to the role's needs, informed by the professional identity reframes and the candidate's actual project data
 6. **Order by relevance** — put the most relevant projects first, not just chronologically
 7. **Adjust skill emphasis** — highlight skills that match the job description, de-emphasise irrelevant ones

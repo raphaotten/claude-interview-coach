@@ -55,6 +55,19 @@ When approved:
 
 This step should take 1-2 minutes, not become a second session. If the enrichment is substantial (5+ updates across multiple files), offer to do it and summarize what changed. Don't re-coach or re-discuss the content.
 
+## Voice Capture Update
+
+If voice capture was enabled at the start of this session, update `data/voice.md`
+as the **final step** — after all data file updates are complete.
+
+Follow the full procedure in `framework/voice-capture.md`: review the session for
+observations, append new entries to the relevant sections, update the **Last
+updated** date, and add the session to the **Observed Over** list.
+
+If voice capture was not enabled, skip this step entirely.
+
+---
+
 ## What NOT to Do
 
 - **Don't invent details.** Only capture what the candidate actually said. Don't infer achievements or embellish.

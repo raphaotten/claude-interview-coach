@@ -34,7 +34,8 @@ Load these files in parallel using the CV path to derive filenames:
 3. **Deep review** — `*-DEEP-REVIEW.md` matching CV filename (to know what tough questions were expected)
 4. **Anti-pattern scorecard** — `coaching/progress-recruiter/_summary.md`
 5. **Anti-pattern tracker** — `coaching/anti-pattern-tracker.md` (global pattern status — which are resolved, which to watch for)
-6. **Session template** — `framework/templates/recruiter-session.md`
+6. **Voice profile** — `data/voice.md` (candidate's communication style and avoidances)
+7. **Session template** — `framework/templates/recruiter-session.md`
 
 If the transcript is not yet in the conversation, ask the user to paste it.
 
@@ -86,6 +87,19 @@ Scan each answer for known anti-patterns. Load the full pattern list from `coach
 - Essay structure (verdict last)
 
 Also watch for any NEW anti-patterns not yet tracked — add them to the tracker after the debrief.
+
+#### E. Voice Profile Cross-Reference
+
+After identifying triggered anti-patterns, scan `data/voice.md` "Things to Avoid":
+- If a triggered anti-pattern also appears in voice.md, flag it as a deep-rooted
+  pattern (shows up in both writing and delivery) — note this in the debrief report.
+- If a newly discovered anti-pattern reflects a fundamental communication style
+  (not a one-off performance mistake), add it to voice.md "Things to Avoid"
+  with a note that it was first observed in a debrief session.
+
+Patterns that cross both systems (e.g. essay structure, passive-voice self-description,
+leading with context before the point): label these **deep-rooted** in the Anti-Patterns
+Triggered section of the report so the candidate knows the issue spans writing and speech.
 
 ### Step 4: Generate Debrief Report
 
