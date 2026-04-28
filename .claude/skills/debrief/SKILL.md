@@ -31,33 +31,17 @@ The transcript is expected to be in the conversation context — the user pastes
 
 Check if a transcript has been pasted into the conversation context.
 
-**If transcript is present:** Skip to Step 1 (existing flow, unchanged).
+**If transcript is present:** Skip to Step 1.
 
-**If no transcript is present:** Fetch from Granola MCP.
+**If no transcript is present:** Delegate to the global `/granola-pull` skill to fetch and parse from Granola. That skill handles the meeting picker, transcript fetch, and Me:/Them: → Q&A parsing, then returns the structured output into the conversation.
 
-1. Call `list_meetings` to retrieve recent meetings (last 14 days)
-2. Present a numbered picker table to the user:
+- If a company/role hint is available (from `$ARGUMENTS` CV path), pass the company slug or role keyword as `/granola-pull <hint>` to narrow the picker.
+- Otherwise invoke `/granola-pull` with no arguments.
+- After `/granola-pull` returns, continue with the meeting title it surfaced — extract the company name from that title for use in Step 1 (loading the correct cheat sheet and company notes).
 
-   | # | Title | Date | Duration |
-   |---|-------|------|----------|
-   | 1 | [meeting title] | [date] | [duration] |
-   | 2 | [meeting title] | [date] | [duration] |
-   | ... | | | |
+If `/granola-pull` reports a fetch/auth failure, tell the user: "Could not fetch transcript from Granola. Please paste the transcript directly, run `/mcp` to re-auth Granola, or verify your plan supports transcript access."
 
-3. Ask: "Which call would you like to debrief? (Enter number)"
-4. After user selects, call `get_meeting_transcript` with the selected meeting's ID
-5. Parse the transcript into Q&A pairs. Granola returns a single string with `Me:` and `Them:` labels:
-   - `Me:` = Nick (the candidate)
-   - `Them:` = interviewer/recruiter (the other person)
-   - Split on `Me:` / `Them:` labels to get individual speaker turns
-   - Pair each "Them:" block with the following "Me:" block to form one Q&A pair
-   - If Nick speaks without a preceding question (e.g., opening intro), mark the question as "(unprompted / opening)"
-   - For panel interviews (multiple remote speakers), note that all remote participants appear as "Them:" - flag this in the debrief output
-6. Extract the company name from the meeting title for use in Step 1 (loading the correct cheat sheet and company notes)
-
-If `list_meetings` returns no results or `get_meeting_transcript` fails, tell the user: "Could not fetch transcript from Granola. Please paste the transcript directly, or verify your Granola plan supports transcript access."
-
-**Deriving CV path from Granola meeting:** When using Granola (no CV path argument), attempt to match the meeting title to an existing company slug in `output/`. If a match is found, use the most recent CV file in that directory. If no match, ask the user for the CV path or proceed without a cheat sheet (see "No cheat sheet fallback" below).
+**Deriving CV path from Granola meeting:** When no CV path argument was provided, attempt to match the meeting title (from `/granola-pull`'s output) to an existing company slug in `output/`. If a match is found, use the most recent CV file in that directory. If no match, ask the user for the CV path or proceed without a cheat sheet (see "No cheat sheet fallback" below).
 
 ### Step 1: Load Context
 

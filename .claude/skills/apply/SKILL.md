@@ -14,6 +14,7 @@ Generate a tailored CV, companion cheat sheet, and cover letter for a specific r
 
 - **`<job-url-or-jd>`** (required) — URL to the job posting, or pasted job description text
 - **`[context]`** (optional) — additional instructions, e.g. `"emphasize McKinsey"`, `"US format, 1 page"`, `"warm tone, mention coffee chat with Alex"`
+- **`--deep-review`** or **`--deep`** (optional flag) — after generating the bundle, automatically run `/review-cv-deep` against the saved CV. Produces a six-perspective audit (Recruiter / Hiring Manager / Competitor / Skeptic / Copy Editor / Source Auditor) saved to `output/<slug>/MMDDYY-[role-slug]-DEEP-REVIEW.md`. Use for high-stakes applications where the ~5-minute cost is justified.
 
 Examples:
 - `/apply https://jobs.impossible.com/cos-role` — full bundle from URL
@@ -35,9 +36,10 @@ Examples:
 ### Step 1: Parse Arguments & Fetch JD
 
 Parse `$ARGUMENTS`:
-1. If the first token contains `http` or a recognisable domain, treat it as a URL. Use WebFetch to retrieve the job posting. If fetch fails, ask user to paste the JD directly.
-2. Otherwise treat the full first argument (before any quoted context string) as pasted JD text.
-3. Extract any quoted or trailing string as the `[context]` override.
+1. **Detect `--deep-review` or `--deep` flag** anywhere in the argument string. If present, set `deep_review = true` and strip the flag from the remaining arguments before further parsing.
+2. If the first remaining token contains `http` or a recognisable domain, treat it as a URL. Use WebFetch to retrieve the job posting. If fetch fails, ask user to paste the JD directly.
+3. Otherwise treat the full first argument (before any quoted context string) as pasted JD text.
+4. Extract any quoted or trailing string as the `[context]` override.
 
 ### Step 2: Profile Guard
 
@@ -77,9 +79,10 @@ Now read:
 
 1. Read `data/project-index.md` — scan all entries for relevance to the role's required skills, industry, seniority level, and company type.
 2. Select **3–6 most relevant projects**. Criteria: skill overlap with required skills > industry/domain match > seniority match > recency.
-3. Read the full project files for each selected project from `data/projects/`.
-4. **NEVER read or use files from `data/project-background/`.**
-5. Note the rationale for each selected project (used in the cheat sheet).
+3. **Side-project trigger:** if the JD mentions technical background, engineering, CS/EE/ML, applied AI, or "builds products," scan side-projects (type: `side-project`) in the project-index regardless of seniority and include the strongest one in a compact Selected Projects section on the CV.
+4. Read the full project files for each selected project from `data/projects/`.
+5. **NEVER read or use files from `data/project-background/`.**
+6. Note the rationale for each selected project (used in the cheat sheet).
 
 ### Step 6: Generate the CV
 
@@ -97,9 +100,9 @@ Apply all **Tailoring Rules** and **CV Quality Standards** from `framework/appli
 
 ### Step 6b: Inline CV Quality Review (mandatory — do NOT skip)
 
-Run all 16 checks from `framework/application-workflow.md` § CV Quality Checks. Fix issues in place — never just flag.
+Run all 18 checks from `framework/application-workflow.md` § CV Quality Checks. Fix issues in place — never just flag.
 
-After all fixes, record a QC summary using the template in `framework/application-workflow.md` § QC Summary Template.
+After all fixes, record a QC summary using the template in `framework/application-workflow.md` § QC Summary Template. The template requires per-check line citations — a bare "clean" without evidence is not acceptable.
 
 ### Step 7: Generate the Cover Letter (Problem-Solution Format)
 
@@ -158,6 +161,16 @@ Write all three files:
 2. **Cheat sheet** → `output/<company-slug>/MMDDYY-[role-slug]-cheatsheet.md`
 3. **Cover letter** → `output/<company-slug>/MMDDYY-cover-letter.md`
 
+### Step 10b: Deep Review (only if `deep_review = true`)
+
+If the `--deep-review` or `--deep` flag was set in Step 1, invoke `/review-cv-deep` against the just-saved CV before updating the pipeline. Pass two arguments: the CV filename (just the filename — the skill reads from `output/`) and the JD (pass the URL if one was provided; otherwise write the JD text to a temp file and pass that path).
+
+The deep-review skill produces `output/<company-slug>/MMDDYY-[role-slug]-DEEP-REVIEW.md` — a six-perspective audit with CRITICAL / IMPORTANT / MINOR / NITPICK findings and a Top 5 Highest-Impact Changes table.
+
+Wait for deep-review to complete before proceeding to Step 11. Capture the key verdicts (Recruiter phone-screen decision, Hiring Manager interview decision, Competitor shortlist rank, Top 3 critical issues) for the Step 12 summary display.
+
+If the flag was not set, skip this step entirely.
+
 ### Step 11: Update Pipeline
 
 1. Read `data/job-pipeline.md`.
@@ -189,6 +202,14 @@ Write all three files:
 - **Claims verified:** N checked, N corrected
 - **Issues fixed:** [list or "none"]
 - **Language consistency:** clean / N items fixed
+
+### Deep Review Verdict (only if `--deep-review` was used)
+- **Deep review file:** `output/<company-slug>/MMDDYY-[role-slug]-DEEP-REVIEW.md`
+- **Recruiter (phone invite?):** Yes / No / Maybe
+- **Hiring Manager (interview?):** Yes / No / Maybe
+- **Competitor shortlist rank:** N of 8
+- **Top 3 critical issues surfaced:** [one-line each]
+- **Recommendation:** [one-line — proceed, fix before submitting, or reconsider]
 
 ### Cover Letter
 - **Word count:** N words [within target / over — consider trimming]

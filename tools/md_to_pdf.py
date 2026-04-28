@@ -97,7 +97,6 @@ strong {
 }
 
 em {
-    font-size: 8pt;
     color: #000000;
 }
 

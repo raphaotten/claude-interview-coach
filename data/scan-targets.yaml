@@ -86,3 +86,38 @@ companies:
     role_filters:
       - "operations"
       - "strategy"
+
+  # -- Pre-IPO enterprise AI (added 2026-04-21) --
+
+  - name: Anthropic
+    ats: greenhouse
+    slug: anthropic
+    active: true
+    role_filters:
+      - "operations"
+      - "strategy"
+      - "chief of staff"
+      - "program"
+      - "business"
+
+  - name: Glean
+    ats: greenhouse
+    slug: gleanwork
+    active: true
+    role_filters:
+      - "operations"
+      - "strategy"
+      - "chief of staff"
+      - "program"
+      - "business"
+
+  - name: Perplexity
+    ats: ashby
+    slug: perplexity
+    active: true
+    role_filters:
+      - "operations"
+      - "strategy"
+      - "chief of staff"
+      - "program"
+      - "business"

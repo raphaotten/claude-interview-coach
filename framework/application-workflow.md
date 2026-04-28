@@ -44,7 +44,10 @@ After determining the company slug, read the company dossier at `output/<company
 - **Role-type emphasis:** Match what you lead with to what the job posting values most. Scan `data/project-index.md` tags and `data/skills.md` categories to find the candidate's strongest overlap with the role's focus area — then lead with those projects and skills. Don't assume which technologies or domains the candidate is strongest in; derive it from the data.
 - For **entrepreneurial / startup roles:** include co-founded companies and side businesses from `data/companies.md`.
 - For **consulting / advisory roles:** include relevant early-career experience, professional qualifications, and degree focus areas.
+- For **roles where the JD mentions technical background, engineering, CS/EE/ML, or "builds products":** scan side-projects in `data/project-index.md` regardless of role seniority and include the strongest one in a compact Selected Projects section.
 - Early-career experience (internships, student jobs, apprenticeships, bootcamps, first roles) is usually omitted unless specifically relevant to the target role.
+- **No parroting company marketing language.** The summary may reference the company's mission or stage, but must not copy distinctive phrases from the company's own marketing or the JD verbatim (e.g. "capital-efficient approach", "frontier AI"). Paraphrase in the candidate's language.
+- **Token de-duplication.** Any distinctive phrase or scale number should appear at most twice across the CV (ideally once in summary and once in the most relevant bullet). Watch for the same headcount, dollar figure, or descriptor repeating three or more times.
 - Keep resumes to 1-2 pages for US market (2-4 pages for DACH/international with extensive project history).
 - Daily rate and availability are only included if explicitly requested.
 
@@ -92,9 +95,9 @@ When the candidate's source data uses accurate but different terminology from a 
 - **Tense must match engagement status.** Present tense for ongoing engagements, past tense for completed ones.
 - **Use standard modern compound forms** (e.g. "subcontractors" not "sub-contractors", "freelancer" not "free-lancer").
 
-## CV Quality Checks (16-point checklist)
+## CV Quality Checks (18-point checklist)
 
-Run all 16 checks against the CV. Fix any issues found **in place** — rewrite the CV, don't just flag problems.
+Run all 18 checks against the CV. Fix any issues found **in place** — rewrite the CV, don't just flag problems.
 
 **1. Keyword coverage:**
 - Take the 10 ATS keywords from the role analysis. For each, verify it appears at least once (case-insensitive, but exact product names must match — "React Native" ≠ "React").
@@ -105,7 +108,7 @@ Run all 16 checks against the CV. Fix any issues found **in place** — rewrite 
 
 **3. Claim integrity:**
 - Scan all quantified claims (years of experience, scale numbers, "across N projects").
-- Cross-reference against project date ranges and source files. Fix or soften any that don't match source data.
+- **Open each source project file referenced in the CV and verify each claim line-by-line.** Fix or soften any that don't match source data.
 - Check certifications against `data/certifications.md` — fix or note status for any expired ones.
 
 **4. No weakness admissions:**
@@ -121,6 +124,7 @@ Run all 16 checks against the CV. Fix any issues found **in place** — rewrite 
 - **Header pattern**: all project headers follow one format throughout (`Role — Description` or `Description — Role`). No "Flagship:" prefixes. Fix any that don't conform.
 - **Bullet format**: all bullets within each section follow the same format (all with bold labels or all without). Fix inconsistencies.
 - **Dates**: every project and engagement has a date range. Add approximate dates (e.g. "Q2 2023") if missing.
+- **Reverse-chronological order**: list every adjacent pair of roles with their end dates; if any role's end date is earlier than the next role's end date below it, the order is broken — fix by sorting strictly by end date (most recent first). This is a blocker.
 - **Availability**: header includes availability/location/remote context if market convention expects it or if candidate is in a different region from the role.
 - **Sentence completeness**: every bullet point contains at least one verb. Fix fragments.
 
@@ -143,6 +147,7 @@ Run all 16 checks against the CV. Fix any issues found **in place** — rewrite 
 
 **13. Metric specificity:**
 - Percentage-based claims must include the underlying metric being measured (e.g., "daily active user engagement by 25%" not just "engagement by 25%"). Include a timeframe or baseline where available from source data. Bare percentages without context are vague and invite skepticism.
+- Dollar figures over $1M must specify what the number represents (opex, revenue, ARR, budget, contract value, TCV). Bare "$130M+" without a qualifier is ambiguous and invites the "$130M of what?" probe.
 
 **14. Client engagement disambiguation (consulting firms):**
 - At consulting firms or agencies, bullets from different client engagements must be clearly attributed to separate clients. Do not bundle bullets from 3 different clients under one employer header without distinguishing which client each bullet refers to. Use descriptors like "for an ecommerce marketplace" vs "for an online retailer" to disambiguate.
@@ -153,13 +158,35 @@ Run all 16 checks against the CV. Fix any issues found **in place** — rewrite 
 **16. Jargon translation:**
 - Replace casual or overly informal language with professional equivalents. Examples: "stood up" → "established", "tiger team" → "cross-functional task force". Standard strategy/ops terms like "rhythm-of-business", "operating cadence", and "OKRs" are fine — only translate slang or company-internal shorthand that an outside reader wouldn't recognize.
 
+**17. Employment gap detection:**
+- List each role's start and end date in chronological order. Compute the delta between each role's end date and the next role's start date.
+- Any gap greater than 3 months that is not covered by an Education entry in that window must be addressed on the CV or cover letter. Add a one-line framing (e.g., "Sabbatical", "Independent consulting", "Career transition") on the CV, or pre-empt in the cover letter.
+- Also flag: any role under 6 months with a single bullet. This reads as a layoff signal. Either expand to 2–3 source-backed bullets or add a one-line framing of why it was short.
+
+**18. JD-keyword-to-source contradiction check (anti-hallucination):**
+- For every bullet that uses a distinctive JD keyword or phrase (e.g., "pricing and packaging", "financial modeling", "competitive analysis", "M&A"), open the source project file and verify that keyword or a clear synonym actually appears in the source file's description of that engagement.
+- If the JD keyword is NOT supported by the source — the generator has lifted language from the JD and attached it to an engagement that was really about something else. This is keyword drift and must be fixed by either (a) rewriting the bullet to match what the source actually says, or (b) moving the claim to a different engagement whose source does substantiate it.
+- Also verify every skill in the Skills section against at least one experience bullet that evidences it substantively (not just name-drops it). Remove skills that cannot be evidenced.
+
 ### QC Summary Template
 
-After all fixes are applied, record a QC summary:
-- Keyword coverage: X/10 matched (list any unfixable gaps)
-- Claims verified: X checked, Y corrected
-- Issues fixed: list structural, language, or self-sabotage fixes made
-- Clean: confirm if no issues found
+After all fixes are applied, record a QC summary. **For each of the 18 checks, cite the specific CV line(s) or section inspected and the outcome.** A bare "clean" without line citations is not acceptable — it means the check was not actually run.
+
+Template:
+
+- **#1 Keyword coverage:** X/10 matched. [List each keyword and where it appears, or mark as gap.]
+- **#2 Product specificity:** [List every technology mention and its specific sub-product, or "n/a — no parent-brand ambiguity".]
+- **#3 Claim integrity:** [For each quantified claim, cite the CV line and the source file line that substantiates it. List corrections made.]
+- **#7 Structural consistency:** [Reverse-chron order verified — list roles with end dates confirming order. Header pattern, bullets, dates, completeness confirmed.]
+- **#8 Language and tense:** [Spelling variant, tense per role, calques checked.]
+- **#11 Causal attribution:** [List each large-scale metric (>$1M, >100%, >100-person) and its scoped verb.]
+- **#12 Skills evidence:** [List every skill in Skills section and the bullet that evidences it. Flag any removed for lack of evidence.]
+- **#13 Metric specificity:** [List every percentage and dollar figure with its qualifier.]
+- **#17 Employment gap:** [List end-to-start deltas between adjacent roles. Flag any >3 months not covered by education or pre-empted on CV.]
+- **#18 JD-keyword-to-source:** [For each JD keyword appearing in a bullet, cite the source file line that substantiates it. List any rewrites.]
+- Other checks (#4, #5, #6, #9, #10, #14, #15, #16): confirm each ran and list any fixes.
+
+If a check genuinely has nothing to flag, write "n/a — [one-line reason]", not just "clean".
 
 ## Cheat Sheet Structure
 

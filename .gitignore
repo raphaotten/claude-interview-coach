@@ -22,6 +22,7 @@ tools/.pending-draft.txt
 tools/gmail_credentials.json
 tools/gmail_token.json
 tools/.gmail_state.json
+tools/.wispr-state.json
 logs/
 
 # Opportunity evaluation (private financial analysis)

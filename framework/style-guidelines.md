@@ -40,6 +40,7 @@ Then apply these universal principles:
 - No "I believe I could," "I think I might," "hoping to" — if it weakens the line, cut it
 - No essay structure — answer first, context second, stop
 - No em dashes in outreach — replace with a comma (e.g., "last week, wanted to follow up" not "last week — wanted to follow up"). Scan the full draft before presenting, not just the first occurrence.
+- **The em-dash rule extends to any spaced hyphen ( - ) functioning as an em dash.** Rule circumvention: using `$130M organization - aligning OKRs` is the same violation as `$130M organization — aligning OKRs`. Replace with comma, semicolon, period, or colon based on clause relationship. Applies to CVs, cover letters, outreach, and all generated text.
 
 ### Thank-You / Post-Screen Emails
 - One specific callback to something the interviewer said — not a generic "great conversation"
@@ -115,3 +116,55 @@ For the DACH freelance market (platforms like freelance.de, GULP, Hays, etc.):
 - Education at the bottom
 - No professional summary (or very brief)
 - Date and location at the bottom ("[City], [date]")
+
+---
+
+## Voice Provenance & Vault Tiers
+
+> Added 2026-04-28 alongside Obsidian vault migration. Refines the original "Agents read, humans write" rule from a binary into a three-tier model that reflects how Nick's reflective writing actually gets produced.
+
+Every vault file gets a `voice:` frontmatter field declaring its provenance. This drives which skills can use it as a tone reference vs. a content reference.
+
+| Tier | Meaning | Examples | Test: does it sound like Nick? |
+|---|---|---|---|
+| `voice: self` | Nick wrote/dictated every word, no AI editing | Raw Wispr captures, manually-typed outreach drafts, first-draft journal entries, `/remember` captures | Yes (gold standard) |
+| `voice: mixed` | Nick's voice with **light AI editing** OR recalled content from others | Lightly-Claude-edited reflections, recruiter debriefs in `coaching/progress-recruiter/`, networking interaction logs, call notes citing what someone else said | Yes (still recognizable) |
+| `voice: co-authored` | **Heavy AI articulation.** Nick approved the synthesis but didn't write the prose. | `data/professional-identity.md` (from `/extract-identity`), `data/projects/*.md`, `data/goals.md` three-paths framework, `data/profile.md` (from `/import-cv`), Claude-synthesized journal/debrief writeups | No — reads more like Claude |
+
+**The mixed-vs-co-authored line is a judgment call.** The test: would a recruiter who knows Nick recognize the voice? Light editing (Claude trimming, fixing typos, tightening) keeps the answer yes — `mixed`. Heavy synthesis (Claude structuring sections, writing the prose, applying Claude's pattern-stamps like "Lesson:" / parallel structure / em dashes) reads as Claude — `co-authored`.
+
+### Hard rule for skills
+
+- **Voice-source skills** (`/voice-export`, `/cold-outreach`, `/follow-up`, `/draft-email`, `/cover-letter`, `/generate-cv`) — filter to `voice: self` only. Never use `co-authored` content as a tone reference. Outputs should sound like Nick, not like Claude articulating Nick.
+- **Content-reference skills** (anything reading vault for facts, decisions, capability evidence — `/research-company`, `/prep-interview`, `/standup`, `/reflect`) — can include `co-authored`. They use the content, not the tone.
+
+### Awareness note (2026-04-28)
+
+Existing reflections in `data/reflections/` have been **lightly Claude-edited**. They've been classified `voice: mixed` rather than `co-authored` — the editing is light enough that the voice still reads as Nick's. This is a judgment call.
+
+**Watch for drift in voice-source skill outputs:**
+- Em dashes Nick wouldn't write
+- Parallel-structure rhetorical patterns (e.g., "X is the rule. Y is the exception.")
+- Stamped epigrammatic closes ("Lesson:", "Pattern:", "The transferable lesson is...")
+- Hedging/precision tells Claude uses ("genuinely," "structurally," "honestly")
+
+If outputs read clean, the existing `voice: mixed` tolerance is fine. If they drift toward Claude voice, retroactively re-tag suspect files as `voice: co-authored` and the filter rule kicks in.
+
+### Why this tier exists
+
+The original "Agents read, humans write" rule prevents agent dossiers from polluting the personal graph. Real reflective writing exists on a continuum — sometimes Nick dictates raw thoughts, sometimes Claude synthesizes a session and Nick approves the synthesis. The three-tier model preserves the rule's *intent* (skills don't generate Claude-flavored output) while not throwing away genuinely valuable AI-articulated reflections.
+
+### Frontmatter shape
+
+```yaml
+---
+type: reflection | identity | company | industry | workbook | journal | meeting | note
+voice: self | mixed | co-authored
+date: YYYY-MM-DD
+people: [name1, name2]
+project: job-search | personal | other
+source: wispr-flow | manual | imported | meeting-debrief
+---
+```
+
+`source` is optional but useful — Wispr captures, manual writes, and Granola meeting debriefs each have different downstream handling.

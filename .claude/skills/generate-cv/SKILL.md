@@ -91,7 +91,7 @@ Apply all **Tailoring Rules** and **CV Quality Standards** from `framework/appli
 
 ### Step 6b: Inline Quality Review (mandatory — do NOT skip)
 
-Before generating the cheat sheet, run all 16 checks from `framework/application-workflow.md` § CV Quality Checks against the CV you just produced. Fix any issues found **in place** — rewrite the CV, don't just flag problems.
+Before generating the cheat sheet, run all 18 checks from `framework/application-workflow.md` § CV Quality Checks against the CV you just produced. Fix any issues found **in place** — rewrite the CV, don't just flag problems.
 
 After all fixes, record a QC summary using the template in `framework/application-workflow.md` § QC Summary Template.
 
