@@ -19,50 +19,21 @@ Then apply these universal principles:
 
 ## Nick's Voice — Outreach & Email
 
-**This is the canonical source for Nick's personal voice in all outreach.** Patterns are extracted from actual sent messages and promoted here from `memory/lessons.md` when a correction pattern reaches 2+ occurrences.
+**Canonical source: [`framework/voice-reference.md`](voice-reference.md).** Corpus-validated rules + verbatim exemplars from 37 labeled emails. Drafting skills (`/cold-outreach`, `/follow-up`, `/draft-email`, `/cover-letter`) read voice-reference.md directly — they MUST load both rules and exemplars.
 
-**Precedence:** These patterns override generic guidance in `framework/outreach-guide.md` when they conflict. Nick's Voice is specific and observed; outreach-guide is universal and strategic — they are complementary, not duplicative.
+The legacy aspirational rules that previously lived here were reconciled into voice-reference.md Section 3 on 2026-05-07. KEEP rules are now canonical; DROP rules (e.g. close with `Thanks!` not `Best,`; ban ` - ` spaced-hyphen in outreach) were factually contradicted by the corpus and removed. See voice-reference.md "Reconciliation from legacy style-guidelines.md" for the full table.
 
-**When adding new rules** (via the self-improvement loop): add to the most specific subsection below. If no subsection fits, create one.
+### CV / cover-letter punctuation rule (still active here)
 
-### Greetings & Closings
-- Open with **"Hi [Name],"** for warm contacts — not just the name alone, not "Hello"
-- Close with **"Thanks!"** — warm, casual, peer-level. Not "Best," not "Sincerely," not just the name
+The em-dash and spaced-hyphen rule applies to **CVs and cover letters** (formal documents), not outreach:
 
-### Phrasing Patterns
-- **"Wanted to follow up here"** — not "Wanted to bump this up" (natural, not pushy)
-- **"Exploring my next move"** — not "job search" or "pointing my job search" (soft framing)
-- **Specific ask, not generic:** "Would Wrecking Ball work?" not just "grab coffee" — concrete venue or format
-- Drop filler adverbs: no "genuinely," "truly," "really" — cleaner without them
-
-### Sentence-Level Rules
-- Short sentences. No filler. No hedge language.
-- No "I believe I could," "I think I might," "hoping to" — if it weakens the line, cut it
-- No essay structure — answer first, context second, stop
-- No em dashes in outreach — replace with a comma (e.g., "last week, wanted to follow up" not "last week — wanted to follow up"). Scan the full draft before presenting, not just the first occurrence.
-- **The em-dash rule extends to any spaced hyphen ( - ) functioning as an em dash.** Rule circumvention: using `$130M organization - aligning OKRs` is the same violation as `$130M organization — aligning OKRs`. Replace with comma, semicolon, period, or colon based on clause relationship. Applies to CVs, cover letters, outreach, and all generated text.
-
-### Thank-You / Post-Screen Emails
-- One specific callback to something the interviewer said — not a generic "great conversation"
-- Callback should reference their words, not your pitch (e.g., "when you described X" not "I mentioned X")
-- Avoid AI-sounding phrases: no "exactly the kind of work I want to be doing," no "deeply aligned with my values"
-- "That really resonated" is natural — use it over "that was exciting" or "that stood out"
-- Keep under 75 words. Three sentences max: thanks, callback, forward-looking close.
-- Subject line: short, human. "Thanks for today" over "Thank you for the conversation regarding..."
-
-**Reference example (Dusty Robotics, Tessa Lau CEO first round, 2026-03-13):**
-
-> Hi Tessa,
->
-> Appreciate you taking the time today. I enjoyed our conversation. When you described the role as "chief of staff mini COO with training wheels," that really resonated - it's exactly the kind of build I want to be doing. Looking forward to connecting with Phil and digging into the data side.
->
-> Thanks!
-> Nick
-
-Structure: appreciation (no "really") + enjoyment + callback using her exact words + "really resonated" (one per email max) + forward-looking next step + warm close.
+- **No em dashes (—) anywhere.**
+- **In CVs and cover letters,** also avoid the spaced hyphen ` - ` functioning as an em dash. Use comma, semicolon, period, or colon based on clause relationship.
+- **In outreach emails,** ` - ` (space-hyphen-space) IS Nick's voice signature (0.86 occurrences per 100 words in corpus). Do NOT replace it. See voice-reference.md Section 1 punctuation profile.
 
 ### When to Apply
-Use these patterns in: `/cold-outreach`, `/follow-up`, `/draft-email`, and any outreach drafted inline during sessions. Read 2–3 entries from `data/networking.md` Interaction Log for additional tone-matching context if available.
+
+Voice patterns: `/cold-outreach`, `/follow-up`, `/draft-email`, `/cover-letter`, and any outreach drafted inline. Read 2-3 entries from `data/networking.md` Interaction Log for additional tone-matching context if available.
 
 ---
 
