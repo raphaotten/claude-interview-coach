@@ -1,261 +1,166 @@
 ---
 name: debrief
-description: Debrief a voice simulation — analyze transcript against coached answers, track anti-patterns, log session
-argument-hint: <path-to-cv>
+description: Debrief a real interview or drill — Nick-first cold scoring against the v0.9+ rubric, then Claude annotates, then ≥1pt disagreements trigger reconciliation. Updates progress/_summary.md, hypotheses.md, anti-pattern-tracker.md.
+argument-hint: <path-to-cv-or-call-context>
 user-invocable: true
 allowed-tools: Read(*), Glob(*), Grep(*), Write(coaching/**), Edit(coaching/**), Write(data/company-notes/**)
 ---
 
-# Debrief — Voice Simulation Post-Session Analysis
+# /debrief — Cross-call interview debrief
 
-Analyze a recruiter screening transcript from a Claude App voice simulation. Compare the candidate's answers against coached answers, identify anti-patterns, rate performance, and log the session to the progress tracker.
+> **MANDATORY READ before writing any output:** `framework/two-tier-capture.md` and `coaching/debrief-rubric.md`. This skill is a synthesis-producing skill operating on voice-corpus material AND a scoring skill bound to a versioned rubric. The principle: raw transcript preserved verbatim with wiki-links + synthesized debrief written separately. Both exist. Never collapse.
 
-## Prerequisites
+## Purpose
 
-The user has:
-1. Completed a voice simulation in the Claude App (generated via `/voice-export`)
-2. Pasted or provided the conversation transcript in this Claude Code conversation
-3. Invoked this skill with the CV path to identify the role
+Score a single interview call against the 5-dimension rubric, surface
+anti-patterns and hypothesis evidence, and propagate updates to the
+canonical cross-call view (`coaching/progress/_summary.md`).
 
-## Arguments
+## Inputs
 
-- `$ARGUMENTS` (required): Path to the CV file used for the simulation.
-  - New nested format: `output/<company-slug>/MMDDYY-[role-slug].md` (e.g. `output/amae-health/022526-chief-of-staff.md`)
-  - Old flat format: `output/MMDDYY-[role-slug].md` (e.g. `output/022526-chief-of-staff.md`) — still supported
+- A Granola transcript (live or pasted) OR a session note Nick wrote
+- The call's date, target, and (best guess) format tag
+- The rubric: `coaching/debrief-rubric.md` (read on every invocation — reference for scoring)
+- Active hypotheses: `coaching/hypotheses.md`
+- Cross-call view: `coaching/progress/_summary.md`
+- Anti-pattern catalog: `coaching/anti-pattern-tracker.md`
 
-The transcript is expected to be in the conversation context — the user pastes it before or after invoking the skill.
+## Workflow (mandatory order)
 
-## Instructions
+### Step 1: Pull and stage
 
-### Step 0: Acquire Transcript
-
-Check if a transcript has been pasted into the conversation context.
-
-**If transcript is present:** Skip to Step 1.
-
-**If no transcript is present:** Delegate to the global `/granola-pull` skill to fetch and parse from Granola. That skill handles the meeting picker, transcript fetch, and Me:/Them: → Q&A parsing, then returns the structured output into the conversation.
-
-- If a company/role hint is available (from `$ARGUMENTS` CV path), pass the company slug or role keyword as `/granola-pull <hint>` to narrow the picker.
-- Otherwise invoke `/granola-pull` with no arguments.
-- After `/granola-pull` returns, continue with the meeting title it surfaced — extract the company name from that title for use in Step 1 (loading the correct cheat sheet and company notes).
-
-If `/granola-pull` reports a fetch/auth failure, tell the user: "Could not fetch transcript from Granola. Please paste the transcript directly, run `/mcp` to re-auth Granola, or verify your plan supports transcript access."
-
-**Deriving CV path from Granola meeting:** When no CV path argument was provided, attempt to match the meeting title (from `/granola-pull`'s output) to an existing company slug in `output/`. If a match is found, use the most recent CV file in that directory. If no match, ask the user for the CV path or proceed without a cheat sheet (see "No cheat sheet fallback" below).
-
-### Step 1: Load Context
-
-**CV path parsing:** Extract the role slug from the CV path to find companion files:
-- New format `output/<company-slug>/MMDDYY-[role-slug].md`: the filename is `MMDDYY-[role-slug].md` — strip the date prefix to get `[role-slug]`
-- Old format `output/MMDDYY-[role-slug].md`: same logic — strip date prefix from the filename
-
-The cheat sheet is in the same directory as the CV: `<cv-directory>/MMDDYY-[role-slug]-cheatsheet.md`
-
-Load these files in parallel using the CV path to derive filenames:
-
-1. **Cheat sheet** — `*-cheatsheet.md` in the same directory as the CV (full file — this IS the coaching side, coached answers are needed here)
-2. **Coached answers** — `coaching/coached-answers.md` (general coached phrasings)
-3. **Deep review** — `*-DEEP-REVIEW.md` matching CV filename (to know what tough questions were expected)
-4. **Anti-pattern scorecard** — `coaching/progress-recruiter/_summary.md`
-5. **Anti-pattern tracker** — `coaching/anti-pattern-tracker.md` (global pattern status — which are resolved, which to watch for)
-6. **Session template** — `framework/templates/recruiter-session.md`
-
-If the transcript is not yet in the conversation, ask the user to paste it.
-
-### Step 2: Parse Transcript
-
-Break the transcript into Q&A pairs:
-- **Recruiter question** — what was asked
-- **Candidate answer** — what the candidate said
-- **Topic** — categorize (pitch, technical, compensation, availability, experience, team fit, logistics, closing)
-
-Note which deep review probing questions were actually asked by the recruiter, and which were skipped.
-
-### Step 3: Analyze Each Answer
-
-For each Q&A pair, assess:
-
-#### A. Answer Quality (1-5)
-- **5** — Strong, close to or better than coached version. Concise, direct, memorable.
-- **4** — Good, minor improvements possible. Got the point across.
-- **3** — Adequate but missed opportunities. Could have been stronger.
-- **2** — Weak. Rambling, defensive, or missed the point.
-- **1** — Harmful. Volunteered a negative, contradicted self, or failed to answer.
-
-#### B. Trust/Credibility Impact
-**Key insight:** Real recruiters don't understand technical details, but they DO notice evasiveness, dodging, and red flags that signal "this person might embarrass me in the client interview."
-
-For each answer, assess trust impact:
-- ✅ **Builds trust:** Direct answer, confident, no hedging
-- ⚠️ **Neutral:** Adequate answer, no red flags
-- ❌ **Damages trust:** Dodged question, vague when pressed for specifics, inconsistent, defensive
-
-**Special attention to:**
-- "Didn't answer the actual question" — even non-technical recruiters notice this
-- Being asked the same question twice because the first answer was too vague
-- Any moment where the recruiter might think "is this person hiding something?"
-
-#### C. Comparison to Coached Answer
-- If a coached answer exists (in cheat sheet or coached-answers.md) for this topic, compare:
-  - What was the coached phrasing?
-  - How close did the candidate get?
-  - What was different — better or worse?
-
-**No cheat sheet fallback:** If no cheat sheet or coached answers exist for this company (common for first-time calls or companies without prep), skip Step 3C (coached-answer comparison) but run all other analysis: filler counts, anti-pattern detection, Q&A grading, trust impact assessment. Include in the report: "No cheat sheet found for [company]. Coached-answer comparison skipped. Consider running /prep-interview [company] to generate one before the next call."
-
-#### D. Anti-Pattern Check
-Scan each answer for known anti-patterns. Load the full pattern list from `coaching/anti-pattern-tracker.md` § "Known Anti-Patterns Reference" — that file is the single source of truth for which patterns exist and their numbering. If the tracker has no patterns yet (new user), use these universal seed patterns:
-- Volunteered a negative unprompted
-- Over-explained technical details
-- Hesitated or waffled on compensation/availability
-- Didn't answer the actual question
-- Essay structure (verdict last)
-
-Also watch for any NEW anti-patterns not yet tracked — add them to the tracker after the debrief.
-
-**Filler word tracking (per D-06):** For the "Filler hedging words" anti-pattern, count specific occurrences of each tracked filler in the candidate's speech:
-- "really" (word boundary match)
-- "kind of" / "kinda"
-- "definitely"
-- "to be honest with you"
-- "absolutely"
-- "pretty" (when used as hedge before adjective: "pretty good", "pretty much", etc.)
-
-Report individual counts in the debrief and include them when updating the anti-pattern tracker Update Log. Example format for the Update Log entry:
-`| 2026-04-08 | Company - Role (Granola/voice sim) | Filler: really x3, kind of x1; [other patterns] | [notes] |`
-
-### Step 4: Generate Debrief Report
-
-Present the analysis to the user in this structure:
+Pull the transcript via `/granola-pull` if not already provided. Confirm
+date, target, and format tag with Nick. Create the per-call file at
+`coaching/progress/<YYYY-MM-DD>-<HHMM>-<slug>.md` with metadata block:
 
 ```markdown
-## Debrief — [Role Title] (Voice Simulation)
-
-**Date:** [today]
-**Questions asked:** [count]
-**Overall confidence rating:** [1-5, based on answer quality average]
-
-### Takeaway
-
-[3-4 sentence executive summary: what happened in the simulation, what the dominant patterns were, what went well, and the single most important thing to fix next.]
-
-### Recruiter Assessment Framework
-
-Real recruiter screening has two dimensions:
-
-| Dimension | Rating | What It Measures |
-|-----------|--------|------------------|
-| **Checkbox Match** | [1-5] | Did you hit the technical keywords from the job ad? |
-| **Trust/Credibility** | [1-5] | "Will this candidate embarrass me if I send them to the client?" |
-
-**Checkbox match:** [X/5] — [brief summary: e.g., "Hit all primary keywords, minor gap on [specific requirement]"]
-**Trust/credibility:** [X/5] — [brief summary: e.g., "Strong except for dodging a concrete example on [topic]"]
-
-**Likelihood of being forwarded:** [X/5] — Checkbox × Trust = overall outcome
-**Likelihood of strong advocacy:** [X/5] — Would the recruiter champion you or just pass you along?
-
-### Answer-by-Answer Analysis
-
-| # | Topic | Question (summary) | Rating | Trust Impact | Anti-Patterns | Notes |
-|---|-------|-------------------|--------|--------------|---------------|-------|
-| 1 | Pitch | Self-introduction | 4/5 | ✅ | — | Strong opening, close to coached version |
-| 2 | Technical | [Technical requirement] | 2/5 | ❌ | Didn't answer yes/no | Recruiter asked twice, creates doubt |
-| ... | | | | | | |
-
-### Anti-Patterns Triggered
-
-- [x] Pattern name — specific example from transcript
-- [ ] Pattern name — NOT triggered
-
-### What Went Well
-- [bullet points of strongest moments]
-
-### What Needs Work
-- [bullet points of weakest moments with coached alternatives]
-
-### Strong Phrasings to Keep
-- [any new strong phrasings worth saving to coached-answers.md]
-
-### Deep Review Questions Coverage
-- [which tough questions were asked, which weren't, how they were handled]
-
-### Focus for Next Session
-- [2-3 specific priorities based on this session's patterns]
+<!-- session-metadata
+format: <compound-tag>
+time-pressure: <1|2|3>
+structure: <1|2|3>
+asymmetry: <1|2|3>
+stage: <stage-tag>
+holistic-rating: TBD
+v0.9-tagged-by: claude-pending-confirm
+-->
 ```
 
-### Step 5: Discuss with User
+Compound formats: `unstructured-chat | structured-behavioral | founder-vibe-check | peer-screen | technical-deep-dive | drill`.
+Stages: `networking | recruiter-screen | hiring-manager | founder-meet | peer-meet | onsite-loop | drill`.
+Drill format leaves orthogonal axes blank.
 
-Present the debrief report and discuss:
-- Ask if the confidence rating feels right
-- Ask if any answers felt better/worse than the analysis suggests
-- Ask if any strong phrasings should be saved to coached-answers.md
-- Confirm the anti-pattern assessment
+### Step 2: NICK-FIRST SCORING (mandatory gate)
 
-### Step 6: Log Session
+Before producing ANY analysis output, ask Nick to score the call cold:
 
-After the user confirms the assessment:
+> "Score 1–5 (half-points OK) on each dimension, with one-line evidence
+> in your own words. I'll annotate after you submit."
+>
+> 1. Format Resilience:
+> 2. Delivery Crispness:
+> 3. STAR Quality:
+> 4. Applied Listening:
+> 5. Authenticity:
+> Overall (your gut):
+> Interviewer signal (low/med/high):
 
-1. **Create session file** — copy `framework/templates/recruiter-session.md` to `coaching/progress-recruiter/YYYY-MM-DD-HHMM-[role-slug].md`. Include:
-   - Takeaway (copy from the debrief report)
-   - Mode: **Voice simulation**
-   - All anti-patterns with checkboxes (checked = triggered)
-   - What went well / what needs work
-   - Coach's key feedback
-   - Strong phrasings to keep
-   - Focus for next session
+**Do not produce dimension scoring or evidence aggregation before Nick
+submits.** This is the polish-anchoring defense (per `feedback_llm_verification_system` memory).
 
-2. **Update summary** at `coaching/progress-recruiter/_summary.md` (if it doesn't exist yet, copy `framework/templates/recruiter-summary.md` first):
-   - Increment session count
-   - Update last session date
-   - Recalculate average confidence rating
-   - Update anti-pattern scorecard (increment counts, update "Last Seen", update trends)
-   - Add session to the Session Index table
+Save Nick's scores to the per-call file under `## Nick's Cold Score`.
 
-3. **Update coached-answers.md** if the user approved any new strong phrasings.
+### Step 3: Claude annotates
 
-4. **Update anti-pattern tracker** at `coaching/anti-pattern-tracker.md`:
-   - Update status, last-seen, and trend for any pattern triggered or notably absent
-   - Move patterns between status categories if warranted (e.g., persistent → resolved after multiple clean sessions)
-   - Add new patterns if discovered during the simulation
-   - Add a line to the Update Log
+Now read the transcript and rubric. For each dimension:
+- Independently score (Claude's read).
+- Surface specific evidence Nick may have missed (quoted lines, counts).
+- Cross-reference against prior calls (e.g. "filler density of X is up
+  Y% vs your last 3 calls").
 
-5. **Data enrichment** — check if the simulation surfaced new information (project details, achievements, technologies, skills) that should be captured in the data files. Follow the procedure in `framework/data-enrichment.md`.
+Save under `## Claude's Annotation`.
 
-### Step 6.5: Update Company Notes
+### Step 4: Disagreement trigger
 
-After logging the session, append structured call intel to the company notes file.
+For any dimension where Claude's score ≠ Nick's by ≥1 point:
+- Generate a `## Reconciliation: Dim N` section
+- Show both scores side by side, evidence for each
+- Ask Nick to adjudicate: "Keep your score, take mine, or split?"
+- Nick's adjudicated score is final.
 
-1. Determine the company slug from the CV path or Granola meeting title
-2. Read `data/company-notes/<slug>.md` (create if it doesn't exist, with header `# <Company Name> - Notes`)
-3. **Use Write (read-then-write), never Edit** - this file may have long rows
-4. Prepend a new section at the top (below the header), formatted as:
+For dimensions within 0.5 of each other: take Nick's score, no reconciliation needed.
 
-```
-## YYYY-MM-DD | [Meeting type] with [interviewer name if known]
+### Step 5: Final scores + interviewer signal
 
-**Source:** Granola transcript / Voice simulation / Pasted transcript
-**Duration:** [if known]
-**Overall rating:** [confidence rating]/5
+Record final scores under `## Final Scores`:
+- Per-dimension (1–5 with half-points)
+- Overall (combined; Nick's call)
+- Interviewer signal (low/med/high) + one-line evidence
 
-### Key Intel
-- [Bullet points of factual information learned: team size, tech stack, timeline, budget, pain points, org structure]
+### Step 6: Anti-pattern check
 
-### Questions They Asked
-- [List of interviewer questions - useful for future prep]
+Scan transcript and Nick's evidence for any patterns from
+`coaching/anti-pattern-tracker.md`. For each detected:
+- Increment count in `_summary.md` Anti-Pattern Scorecard
+- Append occurrence to the per-pattern History section in
+  `anti-pattern-tracker.md`
 
-### Signals
-- [Positive signals: enthusiasm, "we need someone like you", timeline urgency]
-- [Negative signals: hesitation, "we have other candidates", scope concerns]
+For new patterns Nick names: add as `NEW (candidate)` row in `_summary.md`
+Anti-Pattern Scorecard, and a new section in `anti-pattern-tracker.md`.
 
-### Follow-up Items
-- [Action items: send materials, schedule next round, research topic mentioned]
-```
+### Step 7: Hypothesis test log
 
-5. If no company slug can be determined, skip this step and note: "Could not determine company - skipping company notes update. Run manually if needed."
+For each Active or Tested hypothesis in `coaching/hypotheses.md`:
+- Compute prediction for this call (from claim + format tag)
+- Compare to observed scores
+- Append a row to that hypothesis's test log:
+  `| <date> | <call> | <format> | <pred> | <obs> | Support|Refute|Inconclusive | <note> |`
 
-### Session File Naming
+After appending: check promotion criteria. If met, flag for Nick:
+"H<N> meets promotion criteria — review and promote?"
 
-If a session file for this date and role already exists (from a text-based coaching session), append a suffix:
-- First session: `2026-02-10-target-role-slug.md`
-- Second session same day: `2026-02-10-target-role-slug-v2.md`
-- Voice simulation: `2026-02-11-target-role-slug-voice.md` (prefer `-voice` suffix to distinguish from text sessions)
+### Step 8: Cross-call correlation surface (judgment-as-wedge)
+
+Compute and surface (NOT propose) any notable cross-call patterns:
+- Dimension correlations with format/orthogonal axes (n permitting)
+- Recent vs baseline deltas (filler density, anti-pattern counts)
+- Predictions from last debrief's "focus for next session" — did they
+  hold up?
+
+Present to Nick:
+> "Surfaced patterns (suggestive, not statistical at n=<n>): …
+> Anything worth registering as a hypothesis?"
+
+If Nick names one: add to `coaching/hypotheses.md` Hypothesis Backlog
+section as a Hunch (Ladder: Hunch → Active when Nick promotes).
+
+### Step 9: Propagate updates
+
+Update files in this order (each as a separate atomic write):
+1. `coaching/progress/<call-file>.md` — full debrief
+2. `coaching/hypotheses.md` — append test log rows, append new hunches
+3. `coaching/anti-pattern-tracker.md` — append history entries
+4. `coaching/progress/_summary.md` — recompute computed sections, append Session Index row, append Update Log entry
+
+### Step 10: Predictions for next call
+
+Ask Nick: "Based on this debrief, what's the focus for your next
+session?" Record under `## Predictions for Next Session` in the per-call
+file. `/prep-interview` reads this back at the start of the next call.
+
+## Anti-patterns this skill is designed against
+
+- **Polish anchoring:** Step 2 is mandatory before any Claude output.
+- **Status retconning:** Hypothesis test log is append-only; never
+  edit a row, even if verdict turns out wrong (add a corrective row).
+- **Action-loop drift:** Step 10 is required; `/prep-interview` reads it back.
+- **Two-ledger drift:** Anti-pattern counts are canonical in `_summary.md`,
+  per-pattern detail lives in `anti-pattern-tracker.md`. Don't maintain
+  duplicate counts.
+
+## Memory rules honored
+
+- `feedback_judgment_as_wedge` — Step 2 enforces Nick-first scoring; Step 8 surfaces correlations without proposing hypotheses.
+- `feedback_qualitative_vs_binary_verification` — pre-committed rubric (v0.9 → v1) provides scoring scaffold; multi-pass via Step 4 disagreement trigger.
+- `feedback_multipass_independent_review` — divergence is signal, not noise.
+- `feedback_llm_verification_system` — append-only test log; Nick-first gate; no polish before Nick scores.
+- `feedback_two_tier_capture` — raw transcript and synthesized debrief both preserved.

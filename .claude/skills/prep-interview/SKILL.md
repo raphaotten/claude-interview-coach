@@ -258,6 +258,20 @@ For panel: mix — some technical/functional, some culture, some about the panel
 
 ---
 
+### Step 4b: Cross-Call Read-Forward (inline, not an agent)
+
+After agents are dispatched, do these reads inline (in parallel with the agents). Output feeds three sections in the final document.
+
+**1. Active anti-patterns** — read `coaching/progress/_summary.md` Anti-Pattern Scorecard. Take the top 3 by Total Occurrences (excluding zero-count rows). For each, look up its defense one-liner from `coaching/anti-pattern-tracker.md`.
+
+**2. Promoted hypotheses for this format** — read `coaching/hypotheses.md`. Filter to Ladder = Promoted. For each, check whether the call's anticipated format tag appears in the hypothesis's Boundary clause. If yes, inject the Behavior-change clause directly. If no Promoted hypotheses exist, omit the section.
+
+**3. Last session's predictions** — find the most recent `coaching/progress/<date>-*.md` (excluding `_summary.md`, the retrospective, and any drill files). Extract the `## Predictions for Next Session` block verbatim. Phrase as "From <date> <call> debrief: …" then prompt: "→ Has this work happened? Drill those answers before this call if not."
+
+If any source is missing or empty, skip that section in output (graceful degradation per global CLAUDE.md rule).
+
+---
+
 ### Step 5: Compile Output Document
 
 After all 3 agents return, compile their outputs into a single document. Do not just concatenate — synthesize:
@@ -356,6 +370,51 @@ Format: "[Who you are] with [key credential/experience]. Most relevant: [2 proje
 
 ## Answer Gaps (no coached answer exists — prep these)
 [From Agent 1 — questions flagged as gaps, with suggested approach for each]
+
+## Section: Active Anti-Patterns to Watch For
+
+> Inline-populated by Step 4b. Pulled from `coaching/progress/_summary.md`
+> Anti-Pattern Scorecard. Top 3 by total occurrences. For each: name,
+> last seen, defense (one line from `coaching/anti-pattern-tracker.md`).
+
+Example output:
+```
+1. **Filler hedging** (11 occurrences, last seen 2026-05-05).
+   Defense: cold drill 5 min pre-call to "0 fillers" target.
+
+2. **Proper noun error under pressure** (4 occurrences, last seen 2026-05-05).
+   Defense: write target proper nouns out longhand before every call.
+
+3. **Chronological career walkthrough** (4 occurrences, last seen 2026-04-20).
+   Defense: McKinsey-first descending-size opening.
+```
+
+## Section: Promoted Hypotheses for This Format
+
+> Inline-populated by Step 4b. Pulled from `coaching/hypotheses.md` where
+> Ladder = Promoted AND the hypothesis's claim or boundary mentions
+> this call's anticipated format tag. Inject the behavior-change clause
+> directly.
+>
+> If no hypotheses are Promoted yet: skip this section. (At v1 launch
+> H1 is Active, not Promoted, so this section will likely be empty for
+> the first batch of calls.)
+
+## Section: Last Session's Focus
+
+> Inline-populated by Step 4b. Pulled from the most recent
+> `coaching/progress/<date>-*.md` file's "## Predictions for Next
+> Session" block.
+
+Example output:
+```
+From 2026-05-06 Govra/Josh debrief:
+- Sharpen "what's not on your resume" — replace generic expertise framing
+  with a named anecdote.
+- Tighten "dream job in 4-6 years" answer — name a specific outcome.
+
+→ Has this work happened? Drill those two answers before this call if not.
+```
 
 ## Company Context (condensed)
 [From Agent 2 — mission, key business challenge, news to reference, what they care about, cultural signals, things to avoid]
